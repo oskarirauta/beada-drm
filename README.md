@@ -584,6 +584,7 @@ beada/
 │   ├── beada-drm-vblank.c       — vblank hrtimer + flip events
 │   ├── beada-drm-sysfs.c        — rotation attribute
 │   └── beada-drm-pm.c           — DRM resume handler
+│
 └── bl/
     ├── beada-backlight.h
     ├── beada-backlight-drv.c    — platform driver, probe / remove
