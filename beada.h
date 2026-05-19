@@ -54,6 +54,7 @@
  * @model:              NUL-terminated model name, e.g. "5C", "6S", "2W".
  */
 struct beada_panel_info {
+	u8	modelid;
 	u16	width;
 	u16	height;
 	u16	width_mm;
@@ -127,8 +128,9 @@ const struct beada_panel_info *beada_get_panel_info(struct beada_mfd_dev *beada)
  *
  * Currently always returns false: the driver packs pixels as RGB565
  * (matching drm_fb_xrgb8888_to_rgb565 and the JT365 reference) and labels
- * the Panel-Link caps as "format=BGR16"; tested firmware (≥ 5.00) accepts
- * that combination and reorders bytes internally.
+ * the Panel-Link caps as "format=BGR16" except on fallback models which
+ * use "format=RGB16"; tested firmware (≥ 5.00) accepts that combination
+ * and reorders bytes internally.
  *
  * Reserved as an API hook for future devices or firmware that may
  * require a real BGR565 byte order on the wire.  The DRM child should
