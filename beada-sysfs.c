@@ -79,6 +79,13 @@ static const char *beada_platform_name(u8 platform)
 /* Display geometry                                                     */
 /* ------------------------------------------------------------------ */
 
+static ssize_t modelid_show(struct device *dev, struct device_attribute *attr,
+			    char *buf)
+{
+	return sysfs_emit(buf, "%d\n", dev_to_beada(dev)->panel.modelid);
+}
+static DEVICE_ATTR_RO(modelid);
+
 static ssize_t model_show(struct device *dev, struct device_attribute *attr,
 			  char *buf)
 {
@@ -272,6 +279,7 @@ static struct attribute *beada_panel_attrs[] = {
 	&dev_attr_height_mm.attr,
 	&dev_attr_physical_size.attr,
 	/* Device identification */
+	&dev_attr_modelid.attr,
 	&dev_attr_serial_number.attr,
 	&dev_attr_firmware_version.attr,
 	&dev_attr_panellink_version.attr,
