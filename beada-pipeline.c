@@ -152,9 +152,18 @@ static int pl_send(struct beada_mfd_dev *beada,
 	int ret;
 
 	if (!beada->cached_frame_w && !beada->cached_frame_h) {
-		snprintf(fmtstr, sizeof(fmtstr),
-			 "image/x-raw, format=BGR16, height=%u, width=%u, framerate=0/1",
-			 frame_h, frame_w);
+
+		// fallback model should must use video/x-raw, this is undocumented feature
+		// mentioned by NXElec represantive.
+
+		if (beada->panel.modelid != 0xFF)
+			snprintf(fmtstr, sizeof(fmtstr),
+				 "image/x-raw, format=BGR16, height=%u, width=%u, framerate=0/1",
+				 frame_h, frame_w);
+		else
+			snprintf(fmtstr, sizeof(fmtstr),
+				 "video/x-raw, format=RGB16, height=%u, width=%u, framerate=0/1",
+				 frame_h, frame_w);
 
 		pl_fill_tag(tag, PL_TYPE_START, fmtstr);
 		ret = beada_bulk_out(beada, beada->ep_pl_out,
@@ -280,6 +289,7 @@ static int beada_try_iproduct(struct beada_mfd_dev *beada)
 		model = beada_lookup_model_by_res((u16)w, (u16)h);
 
 	if (model) {
+		beada->panel.modelid   = model->os_version;
 		beada->panel.width     = model->width;
 		beada->panel.height    = model->height;
 		beada->panel.width_mm  = model->width_mm;
@@ -298,6 +308,7 @@ static int beada_try_iproduct(struct beada_mfd_dev *beada)
 	dev_warn(beada->dev,
 		 "%ux%u not in model table; add entry to beada-model.c\n",
 		 w, h);
+	beada->panel.modelid   = 0xFF;
 	beada->panel.width     = (u16)w;
 	beada->panel.height    = (u16)h;
 	beada->panel.width_mm  = 0;
@@ -389,6 +400,7 @@ try_iproduct:
 		 model->width, model->height);
 
 apply_model:
+	beada->panel.modelid   = model->os_version;
 	beada->panel.width     = model->width;
 	beada->panel.height    = model->height;
 	beada->panel.width_mm  = model->width_mm;
